@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mint a Node — own the AI you're renting</title>
+<meta name="description" content="I mint you a small AI model you OWN — tuned to one task, proven cheaper and better than what you rent, running on your own hardware, with a signed receipt. If the receipt doesn't say it beats your baseline, you don't pay.">
+<meta property="og:title" content="Mint a Node — own the AI you're renting">
+<meta property="og:description" content="A small model tuned to your task, proven with a signed receipt, running on your metal. If it doesn't beat your baseline, you don't pay.">
+<style>
+  :root{
+    --bg:#0c0b08; --panel:#15130d; --panel2:#1c1910; --line:#2e2817; --ink:#f3efe4; --dim:#a99f86;
+    --gold:#e3b552; --gold2:#f2d488; --good:#46c98f; --bad:#f07862;
+    --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+    --serif:"Iowan Old Style",Palatino,"Book Antiqua",Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,Segoe UI,Roboto,sans-serif;padding:0 0 3rem}
+  .wrap{max-width:920px;margin:0 auto;padding:0 1.2rem}
+  a{color:var(--gold2)}
+  .eyebrow{font:.72rem var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
+  header{padding:3.4rem 0 1rem;text-align:center}
+  h1{font-family:var(--serif);font-size:clamp(2rem,5.5vw,3.2rem);line-height:1.08;letter-spacing:-.01em;text-wrap:balance}
+  h1 .g{color:var(--gold2)}
+  .lede{color:var(--dim);font-size:clamp(1.05rem,2.4vw,1.25rem);max-width:42rem;margin:1.1rem auto 0;text-wrap:balance}
+  .cta-row{display:flex;gap:.7rem;flex-wrap:wrap;justify-content:center;margin:1.8rem 0 .4rem}
+  .btn{display:inline-block;font-weight:800;font-size:1rem;padding:.85rem 1.5rem;border-radius:12px;cursor:pointer;border:0;text-decoration:none}
+  .btn.gold{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#241a05;box-shadow:0 6px 26px rgba(227,181,82,.22)}
+  .btn.gold:hover{filter:brightness(1.06)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--gold);color:var(--gold2)}
+  .micro{font-size:.85rem;color:var(--dim);margin-top:.3rem}
+  section{padding:2.2rem 0;border-top:1px solid var(--line)}
+  h2{font-family:var(--serif);font-size:clamp(1.4rem,3.4vw,1.9rem);letter-spacing:-.01em;text-wrap:balance}
+  .sub{color:var(--dim);margin-top:.4rem;max-width:44rem}
+  .pain{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.9rem;margin-top:1.2rem}
+  .pcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem}
+  .pcard .x{color:var(--bad);font-weight:800;font-size:1.1rem}
+  .pcard b{display:block;margin:.3rem 0 .25rem;font-size:1.02rem}
+  .pcard p{color:var(--dim);font-size:.92rem}
+  .steps{counter-reset:s;display:grid;gap:.7rem;margin-top:1.2rem}
+  .step{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1.2rem 1.05rem 3.4rem}
+  .step::before{counter-increment:s;content:counter(s);position:absolute;left:1.1rem;top:1.05rem;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--gold);color:#241a05;font-weight:800;display:grid;place-items:center;font-size:.9rem}
+  .step b{font-size:1.05rem}
+  .step p{color:var(--dim);font-size:.93rem;margin-top:.15rem}
+  .guarantee{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--gold);border-radius:16px;padding:1.6rem 1.4rem;text-align:center;margin-top:1.2rem}
+  .guarantee .big{font-family:var(--serif);font-size:clamp(1.5rem,4vw,2.1rem);color:var(--gold2);text-wrap:balance}
+  .guarantee p{color:var(--dim);max-width:40rem;margin:.6rem auto 0}
+  .proof{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.7rem;margin-top:1.2rem}
+  .plink{display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;text-decoration:none;color:var(--ink);transition:border-color .15s}
+  .plink:hover{border-color:var(--gold)}
+  .plink .n{font:800 .95rem var(--mono);color:var(--gold2)}
+  .plink .d{color:var(--dim);font-size:.82rem;margin-top:.15rem}
+  .receipt{background:#0a0906;border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin-top:1.1rem;font:.85rem var(--mono)}
+  .receipt .row{display:flex;justify-content:space-between;gap:.6rem;padding:.35rem 0;border-bottom:1px dashed var(--line);flex-wrap:wrap}
+  .receipt .row:last-child{border-bottom:0}
+  .beats{color:var(--good);font-weight:800} .loses{color:var(--bad);font-weight:800}
+  .tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:.9rem;margin-top:1.2rem}
+  .tier{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.3rem 1.3rem;display:flex;flex-direction:column}
+  .tier.feature{border-color:var(--gold);background:linear-gradient(180deg,var(--panel2),var(--panel))}
+  .tier .t{font:800 1.05rem var(--mono);color:var(--gold2)}
+  .tier .price{font-family:var(--serif);font-size:1.7rem;margin:.3rem 0 .1rem}
+  .tier .when{color:var(--dim);font-size:.85rem}
+  .tier ul{list-style:none;margin:.9rem 0 0;padding:0;flex:1}
+  .tier li{padding:.28rem 0 .28rem 1.4rem;position:relative;color:var(--dim);font-size:.92rem}
+  .tier li::before{content:"→";position:absolute;left:0;color:var(--gold)}
+  .tier li b{color:var(--ink)}
+  .note{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:10px;padding:1rem 1.2rem;margin-top:1.2rem;color:var(--dim);font-size:.92rem}
+  .note b{color:var(--ink)}
+  #contact{text-align:center}
+  .contact-box{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--gold);border-radius:16px;padding:1.8rem 1.4rem;margin-top:1.2rem}
+  .contact-box .line{font:1rem var(--mono);margin:.5rem 0;word-break:break-word}
+  .contact-box .line b{color:var(--gold2)}
+  footer{margin-top:2.4rem;padding-top:1.2rem;border-top:1px solid var(--line);color:var(--dim);font-size:.82rem;text-align:center}
+  .edit{outline:1px dashed var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Custom AI · owned, not rented</div>
+  <h1>Own the AI<br>you're <span class="g">renting.</span></h1>
+  <p class="lede">I mint you a small model tuned to <b>one job you do a lot</b> — proven cheaper and sharper than the frontier model you rent per token, running on <b>your own hardware</b>, with a signed receipt. If the receipt doesn't say it beats your baseline, <b>you don't pay.</b></p>
+  <div class="cta-row">
+    <a href="#contact" class="btn gold">Get a free proof node →</a>
+    <a href="#how" class="btn ghost">See how it works</a>
+  </div>
+  <div class="micro">One free minted node for one real task — no cost, no commitment.</div>
+</header>
+
+<section id="pain">
+  <h2>The problem with renting intelligence</h2>
+  <p class="sub">You're sending a repetitive task — triage, classification, extraction, routing — to a giant frontier model, over and over. Three things follow:</p>
+  <div class="pain">
+    <div class="pcard"><span class="x">✕</span><b>You pay per token, forever</b><p>Every call bills again. A task you run a million times a month is a bill that never stops and only grows.</p></div>
+    <div class="pcard"><span class="x">✕</span><b>Your data leaves the building</b><p>Every request goes to someone else's servers. For legal, health, finance and internal work, that's the whole problem.</p></div>
+    <div class="pcard"><span class="x">✕</span><b>You can't prove it's any good</b><p>The model's a black box you rent. No measurement, no receipt, no way to show it beats a cheaper option.</p></div>
+  </div>
+</section>
+
+<section id="how">
+  <h2>What I do instead</h2>
+  <p class="sub">I run a mutation-gated factory that mints owned models and proves them. For your task, it's four steps:</p>
+  <div class="steps">
+    <div class="step"><b>You name the task.</b><p>One repetitive thing you feed an LLM today — and a handful of example inputs and correct answers. That's all I need to start.</p></div>
+    <div class="step"><b>I mint an owned model.</b><p>A small base model, specialized to your task, baked into a model file you keep. No subscription, no lock-in — it's a file you own.</p></div>
+    <div class="step"><b>The gate proves it.</b><p>Your minted model is measured against its baseline on a held-out test set, deterministically. You get a <b>signed receipt</b>: beats baseline by X%, this much cheaper, this much faster.</p></div>
+    <div class="step"><b>You run it private.</b><p>On your own metal. Data never leaves. It borrows a bigger model only as a rare, budgeted fallback — never as the default.</p></div>
+  </div>
+
+  <div class="guarantee">
+    <div class="big">If the receipt doesn't say it beats your baseline, you don't pay.</div>
+    <p>The measurement isn't my opinion — it's a deterministic gate that can, and does, return LOSES. I can only make that promise because the proof is objective. Nobody renting you a black box can.</p>
+  </div>
+</section>
+
+<section id="proof">
+  <h2>This is already live — not a pitch deck</h2>
+  <p class="sub">The whole factory is built, public, and mutation-gated. Every claim on it is checkable in your browser right now. Six pieces:</p>
+  <div class="proof">
+    <a class="plink" href="https://sjgant80-hub.github.io/fallforge-gate/"><span class="n">the gate</span><div class="d">proves a model beats its baseline — receipts that can say LOSES</div></a>
+    <a class="plink" href="https://sjgant80-hub.github.io/fallforge-mint/"><span class="n">the mint</span><div class="d">forges an owned model, signs it end to end</div></a>
+    <a class="plink" href="https://sjgant80-hub.github.io/fallnode/"><span class="n">the runtime</span><div class="d">serves it private, on your metal</div></a>
+    <a class="plink" href="https://sjgant80-hub.github.io/fallforge-catalogue/"><span class="n">the shelf</span><div class="d">own-vs-rent maths on your rates</div></a>
+    <a class="plink" href="https://sjgant80-hub.github.io/fallforge-mesh/"><span class="n">the mesh</span><div class="d">couple models so none — and no cloud — dominates</div></a>
+    <a class="plink" href="https://sjgant80-hub.github.io/fallforge-factory/"><span class="n">the factory</span><div class="d">all of it, one unbroken proof chain</div></a>
+  </div>
+  <div class="receipt">
+    <div class="row"><span>a real minted node — <b>triage-1b</b> (support ticket routing)</span><span class="beats">BEATS its base · +19%</span></div>
+    <div class="row"><span>the same node, measured against a model 7× its size</span><span class="loses">LOSES · but 3× faster</span></div>
+    <div class="row" style="color:var(--dim)"><span>— both receipts shipped. Honesty is the product: you always see the real number.</span><span></span></div>
+  </div>
+</section>
+
+<section id="pricing">
+  <h2>How it works to buy</h2>
+  <p class="sub">Start free. You only pay once you've seen a receipt that proves it's worth it.</p>
+  <div class="tiers">
+    <div class="tier feature">
+      <div class="t">Proof node</div>
+      <div class="price">Free</div>
+      <div class="when">one task · one company</div>
+      <ul>
+        <li>I mint one node for <b>one real task</b> of yours</li>
+        <li>You get the <b>signed receipt</b> and the model file</li>
+        <li>In return: a short testimonial if it lands</li>
+        <li><b>Zero cost, zero commitment</b></li>
+      </ul>
+      <a href="#contact" class="btn gold" style="margin-top:1rem;text-align:center">Claim the free node →</a>
+    </div>
+    <div class="tier">
+      <div class="t">Minted node</div>
+      <div class="price">Fixed fee</div>
+      <div class="when">per node, one-off</div>
+      <ul>
+        <li>Mint + prove + deploy one owned node for a use-case</li>
+        <li>Signed receipt, model file, and a private runtime set up</li>
+        <li>You <b>own it outright</b> — no per-token bill, ever</li>
+        <li>Priced by task complexity, quoted before any work</li>
+      </ul>
+    </div>
+    <div class="tier">
+      <div class="t">Run it for you</div>
+      <div class="price">Monthly</div>
+      <div class="when">retainer</div>
+      <ul>
+        <li>I host, monitor and re-mint as your data drifts</li>
+        <li>Add new nodes as new tasks appear</li>
+        <li>Couple them into a private mesh that cross-checks itself</li>
+        <li>Your own sovereign AI stack, maintained</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note"><b>Not on the menu yet:</b> anything regulated — legal advice, tax, medical, financial products. Those need proper counsel first, and I won't pretend otherwise. This is for the repetitive, high-volume, unregulated work you're overpaying to rent.</div>
+</section>
+
+<section id="contact">
+  <h2>Bring me one task</h2>
+  <p class="sub" style="margin-left:auto;margin-right:auto">One repetitive thing you feed an LLM. I'll mint you a proof node, free, and send you the receipt. If it's good, we talk. If it isn't, you've lost nothing and I've said so plainly.</p>
+  <div class="contact-box">
+    <div class="line">📩 <b><a href="mailto:sjgant80@gmail.com?subject=Mint%20me%20a%20proof%20node&body=Here's%20the%20repetitive%20task%20I%20want%20a%20model%20for%3A%0A%0A(a%20few%20example%20inputs%20and%20the%20correct%20answers%20help%20most)">sjgant80@gmail.com</a></b></div>
+    <div class="line">💬 DM me on <b><a href="https://www.linkedin.com/" class="edit" id="li-link">LinkedIn</a></b> <span class="micro">(swap in your profile link)</span></div>
+  </div>
+</section>
+
+<footer>
+  <p>Built on a mutation-gated, open-source factory — <a href="https://github.com/sjgant80-hub/fallforge-factory">see the code</a>. Own the intelligence you're renting.</p>
+</footer>
+</div>
+</body>
+</html>
